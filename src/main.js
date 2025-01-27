@@ -1,0 +1,50 @@
+import { Hono } from "hono";
+import { stream } from "hono/streaming";
+import { serve } from "@hono/node-server";
+import { Liquid } from "liquidjs";
+import path from "node:path";
+
+const app = new Hono();
+
+const liquid = new Liquid({
+  root: [path.resolve(import.meta.dirname, "../templates")],
+  extname: ".liquid",
+  cache: true,
+});
+
+app.get("/", (ctx) => {
+  return stream(ctx, async (stream) => {
+    ctx.res.headers.set("Content-Type", "text/html; charset=utf8");
+
+    await stream.writeln(await liquid.renderFile("layouts/base"));
+
+    await stream.writeln(
+      await getTopStories().then((items) => {
+        return liquid.renderFile("partials/history-items", {
+          items,
+        });
+      })
+    );
+
+    stream.close();
+  });
+});
+
+serve({
+  fetch: app.fetch,
+  port: 4200,
+});
+
+function getTopStories() {
+  return fetch("https://hacker-news.firebaseio.com/v0/topstories.json")
+    .then((res) => res.json())
+    .then((res) => {
+      return Promise.all(
+        res.map((id) =>
+          fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(
+            (res) => res.json()
+          )
+        )
+      );
+    });
+}

@@ -1,0 +1,31 @@
+{
+  "name": "streaming-test",
+  "type": "module",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wireit"
+  },
+  "wireit": {
+    "dev": {
+      "command": "node ./src/main.js",
+      "service": true,
+      "files": [
+        "src/**",
+        "templates/**"
+      ]
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.16",
+    "liquidjs": "^10.20.1"
+  },
+  "devDependencies": {
+    "wireit": "^0.14.9"
+  }
+}
