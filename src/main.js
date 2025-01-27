@@ -15,6 +15,7 @@ const liquid = new Liquid({
 app.get("/", (ctx) => {
   return stream(ctx, async (stream) => {
     ctx.res.headers.set("Content-Type", "text/html; charset=utf8");
+    ctx.res.headers.set("Transfer-Encoding", "chunked");
 
     await stream.writeln(await liquid.renderFile("layouts/base"));
 
