@@ -9,12 +9,31 @@
   },
   "wireit": {
     "dev": {
-      "command": "node ./src/main.js",
+      "command": "node ./target/main.js",
       "service": true,
       "files": [
-        "src/**",
+        "target/**",
         "templates/**"
+      ],
+      "dependencies": [
+        {
+          "script": "tsc",
+          "cascade": false
+        }
       ]
+    },
+    "tsc": {
+      "command": "tsc --build --pretty",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**",
+        "tsconfig.json"
+      ],
+      "output": [
+        "target/**",
+        "tsconfig.tsbuildinfo"
+      ],
+      "dependencies": []
     }
   },
   "keywords": [],
@@ -22,10 +41,15 @@
   "license": "ISC",
   "dependencies": {
     "@hono/node-server": "^1.13.7",
+    "@joist/element": "^4.0.0-next.51",
+    "@joist/observable": "^4.0.0-next.51",
     "hono": "^4.6.16",
-    "liquidjs": "^10.20.1"
+    "liquidjs": "^10.20.1",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
+    "@types/node": "^22.12.0",
+    "typescript": "^5.7.3",
     "wireit": "^0.14.9"
   }
 }

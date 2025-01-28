@@ -1,8 +1,10 @@
+import path from "node:path";
+import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { stream } from "hono/streaming";
-import { serve } from "@hono/node-server";
 import { Liquid } from "liquidjs";
-import path from "node:path";
+
 
 const app = new Hono();
 
@@ -11,6 +13,11 @@ const liquid = new Liquid({
   extname: ".liquid",
   cache: true,
 });
+
+app.use("/assets/**", serveStatic({ root: "./" }));
+app.use("/node_modules/@joist/**", serveStatic({ root: "./" }));
+app.use("/node_modules/tslib/**", serveStatic({ root: "./" }));
+app.use("/target/components/**", serveStatic({ root: "./" }));
 
 app.get("/", (ctx) => {
   return stream(ctx, async (stream) => {
@@ -38,8 +45,8 @@ serve({
 
 function getTopStories() {
   return fetch("https://hacker-news.firebaseio.com/v0/topstories.json")
-    .then((res) => res.json())
-    .then((res) => {
+    .then<string[]>((res) => res.json())
+    .then<any[]>((res) => {
       return Promise.all(
         res.map((id) =>
           fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(
