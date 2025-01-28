@@ -7,8 +7,6 @@ import { compress } from 'hono/compress'
 import { Liquid } from "liquidjs";
 
 
-
-
 const liquid = new Liquid({
   root: [path.resolve(import.meta.dirname, "../templates")],
   extname: ".liquid",
