@@ -3,16 +3,21 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { stream } from "hono/streaming";
+import { compress } from 'hono/compress'
 import { Liquid } from "liquidjs";
 
 
-const app = new Hono();
+
 
 const liquid = new Liquid({
   root: [path.resolve(import.meta.dirname, "../templates")],
   extname: ".liquid",
   cache: true,
 });
+
+const app = new Hono();
+
+app.use(compress());
 
 app.use("/assets/**", serveStatic({ root: "./" }));
 app.use("/node_modules/@joist/**", serveStatic({ root: "./" }));
@@ -44,7 +49,11 @@ serve({
 });
 
 function getTopStories() {
-  return fetch(`https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty&limitToFirst=50&orderBy="$key"`)
+  const url = new URL("https://hacker-news.firebaseio.com/v0/topstories.json");
+  url.searchParams.set("limitToFirst", "50");
+  url.searchParams.set("orderBy", "\"$key\"");
+  
+  return fetch(url)
     .then<string[]>((res) => res.json())
     .then<any[]>((res) => {
       return Promise.all(
