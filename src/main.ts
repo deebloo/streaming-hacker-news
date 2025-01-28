@@ -44,7 +44,7 @@ serve({
 });
 
 function getTopStories() {
-  return fetch("https://hacker-news.firebaseio.com/v0/topstories.json")
+  return fetch(`https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty&limitToFirst=50&orderBy="$key"`)
     .then<string[]>((res) => res.json())
     .then<any[]>((res) => {
       return Promise.all(
